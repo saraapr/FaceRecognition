@@ -63,8 +63,8 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 global A m1 n1 No_Files_In_Class_Folder Class_Count Training_Set_Folder
 
 Training_Set_Folder = [uigetdir(''),'\'];
-m1 = 6;
-n1 = 3;
+m1 = 12;
+n1 = 10;
 TS_Vector = dir(Training_Set_Folder);
 No_Folders_In_Training_Set_Folder = length(TS_Vector);
 File_Count = 1;
@@ -112,8 +112,46 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global A m1 n1 No_Files_In_Class_Folder Class_Count Training_Set_Folder
 
-[Test_File Test_File_Path] = uigetfile('*.jpg;*.pgm;*.png;*.tif','Select a Test Image');
+
+total = 0;
+Istrue=0;
+
+
+Test_Set_Folder = [uigetdir(''),'\'];
+TS_Vector = dir(Test_Set_Folder);
+No_Folders_In_Test_Set_Folder = length(TS_Vector);
+h = waitbar(0,'Reading Test Images,Please wait...');
+for k = 3:No_Folders_In_Test_Set_Folder
+    waitbar(k/(No_Folders_In_Test_Set_Folder-2))
+    Class_Folder = [Test_Set_Folder '\' TS_Vector(k).name,'\'];
+    CF_Tensor = dir(Class_Folder);
+    No_Files_In_Class_Folder(Class_Count) = length(CF_Tensor)-2;
+    %     strr = sprintf('Reading Test Images...!, # of Classes = %d, Now Reading %d ',No_Folders_In_Training_Set_Folder-2,Class_Count);
+    %     set(handles.edit3,'String',strr);
+    drawnow;
+    for p = 3:No_Files_In_Class_Folder(Class_Count)+2
+        Test_File_Path = Class_Folder;
+        Test_File = CF_Tensor(p).name;
+        Tmp_Image_Path_Name = [Test_File_Path,Test_File];
+        if strcmp(Test_File,'Thumbs.db')
+            break
+        end
+    
+
+
+
+
+
+%[Test_File Test_File_Path] = uigetfile('*.jpg;*.pgm;*.png;*.tif','Select a Test Image');
 test_image_path = [Test_File_Path Test_File];
+
+% Test_File_Path='.\FaceDatabase\Database1\Test_Data'
+% TestFiles=dir(Test_File_Path);
+% for qq=3:length(TestFiles)
+% Test_File =TestFiles(qq)
+
+
+
 axes(handles.axes3)
 cla
 axes(handles.axes4)
@@ -164,5 +202,20 @@ Image_Path = [Training_Set_Folder,cccc(clss+2).name,'\',Which_Folder(Which_Image
 Class_Image = (Image_Path);
 axes(handles.axes4);
 imshow(Class_Image)
+
+%calculate accuracy 
+total=total+1;
+if(TS_Vector(k).name==cccc(clss+2).name)
+Istrue=Istrue+1;
+end
+%pause to show the pic
+pause(0.001);
+    end
+end
+close(h);
+
+eta = (Istrue/total)*100;
+disp(['Accuracy:   ' num2str(eta)]);
+
 
 %SaraAnsaripour
